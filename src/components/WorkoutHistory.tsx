@@ -2,12 +2,19 @@ import React from 'react';
 import { Workout } from '../types';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { Trash2, Activity, Clock, Flame } from 'lucide-react';
+import { Trash2, Activity, Clock, Flame, Smile } from 'lucide-react';
 
 interface WorkoutHistoryProps {
   workouts: Workout[];
   onDelete: (id: string) => void;
 }
+
+const MOOD_EMOJIS: Record<string, string> = {
+  great: '🤩',
+  good: '🙂',
+  okay: '😐',
+  bad: '😫',
+};
 
 export default function WorkoutHistory({ workouts, onDelete }: WorkoutHistoryProps) {
   if (workouts.length === 0) {
@@ -23,14 +30,14 @@ export default function WorkoutHistory({ workouts, onDelete }: WorkoutHistoryPro
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">История тренировок</h2>
       
       <div className="space-y-4">
         {workouts.map(workout => (
-          <div key={workout.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-all hover:shadow-md">
+          <div key={workout.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-start justify-between gap-4 group transition-all hover:shadow-md">
             
-            <div className="flex items-start space-x-4">
+            <div className="flex items-start space-x-4 flex-1">
               <div className={`p-3 rounded-xl flex-shrink-0 ${
                 workout.type === 'Cardio' ? 'bg-blue-100 text-blue-600' :
                 workout.type === 'Strength' ? 'bg-purple-100 text-purple-600' :
@@ -41,20 +48,31 @@ export default function WorkoutHistory({ workouts, onDelete }: WorkoutHistoryPro
                 <Activity className="w-6 h-6" />
               </div>
               
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">
-                  {workout.type === 'Cardio' ? 'Кардио' : 
-                   workout.type === 'Strength' ? 'Силовая' : 
-                   workout.type === 'Flexibility' ? 'Растяжка' : 
-                   workout.type === 'Sports' ? 'Спорт' : 'Другое'}
-                </h3>
-                <p className="text-sm text-gray-500">
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {workout.type === 'Cardio' ? 'Кардио' : 
+                     workout.type === 'Strength' ? 'Силовая' : 
+                     workout.type === 'Flexibility' ? 'Растяжка' : 
+                     workout.type === 'Sports' ? 'Спорт' : 'Другое'}
+                  </h3>
+                  {workout.mood && (
+                    <span className="text-lg" title="Самочувствие">{MOOD_EMOJIS[workout.mood]}</span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500 mb-2">
                   {format(new Date(workout.date), 'd MMMM yyyy, HH:mm', { locale: ru })}
                 </p>
                 
+                {workout.reflection && (
+                  <div className="mt-2 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/50">
+                    <p className="text-sm text-indigo-900 font-medium">✨ {workout.reflection}</p>
+                  </div>
+                )}
+                
                 {workout.notes && (
-                  <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                    "{workout.notes}"
+                  <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    📝 {workout.notes}
                   </p>
                 )}
               </div>
